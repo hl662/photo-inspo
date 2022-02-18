@@ -1,0 +1,9 @@
+h2 {
+  font-size: larger;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+}
+
