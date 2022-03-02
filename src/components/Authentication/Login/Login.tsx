@@ -1,9 +1,9 @@
-import {Component, Dispatch, SetStateAction} from "react";
+import {Component} from "react";
 import './Login.css'
-import {AuthenticationProps} from "../App";
+import {AuthTokenProps} from "../Authentication";
 
 export interface LoginProps {
-    setAuthProps: Dispatch<SetStateAction<AuthenticationProps>>;
+    setAuthProps: (props: AuthTokenProps) => void
 }
 
 interface LoginState {
@@ -21,13 +21,28 @@ class Login extends Component<LoginProps, LoginState> {
         this.state = this.defaultState;
     }
 
+    private login(): void {
+        // If state is empty, then alert that field is not filled
+        fetch(`https://photo-inspo-backend.herokuapp.com/login?username=${this.state.username}&password=${this.state.password}`, {
+            method: "GET",
+            mode: 'cors',
+            headers: {
+                'Content-Type': "application/json",
+            },
+        }).then((response: Response) => {
+            if (!response.ok) {
+                throw new Error(`Error code ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        }).then((data) => {
+            this.props.setAuthProps({token: data.tokenID, username: data.username})
+        }).catch(error => alert(error))
+    }
 
     render() {
         let handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
             event.preventDefault();
-            console.log(this.state.username);
-            console.log(this.state.password);
-            this.props.setAuthProps({token: "HIIIII"})
+            this.login();
         }
         return (
             <div className="login-wrapper">
@@ -57,6 +72,7 @@ class Login extends Component<LoginProps, LoginState> {
                         <button type="submit">Submit</button>
                     </div>
                 </form>
+
             </div>
         )
     }

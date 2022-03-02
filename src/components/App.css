@@ -1,9 +1,11 @@
-h2 {
-  font-size: larger;
-}
+@import '~antd/dist/antd.css';
 
-.App {
-  display: flex;
-  flex-direction: column;
-}
+/*h2 {*/
+/*    font-size: larger;*/
+/*}*/
+
+/*.App {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*}*/
 

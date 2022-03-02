@@ -1,28 +1,15 @@
-import React, {useState} from 'react';
+import React from 'react';
 import './App.css';
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
-import Dashboard from "./Dashboard";
-import Preferences from "./Preferences";
-import Login from "./Login/Login";
+import 'antd/dist/antd.less'; // or 'antd/dist/antd.less'
+import Main from "./Main/Main";
 
-export interface AuthenticationProps {
-    token: string;
-}
 
 function App() {
-    const [authProps, setAuthProps] = useState<AuthenticationProps>({token: ""});
-    if (authProps.token === "") {
-        return <Login setAuthProps={setAuthProps}/>;
-    }
     return (
-        <div className="App">
-            <h1>Application</h1>
-            <BrowserRouter>
-                <Routes>
-                    <Route path='/dashboard' element={<Dashboard/>}/>
-                    <Route path='/preferences' element={<Preferences/>}/>
-                </Routes>
-            </BrowserRouter>
+        // <Main > // include the browser router
+        // https://stackoverflow.com/questions/59674690/react-router-with-ant-design-sider-how-to-populate-content-section-with-compo
+        <div className="Main">
+            <Main/>
         </div>
     );
 }
