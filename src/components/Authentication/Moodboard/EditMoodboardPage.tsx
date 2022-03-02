@@ -44,14 +44,14 @@ export class EditMoodboardPage extends Component<EditMoodboardPageProps, EditMoo
             borderColor: red[4],
             borderRadius: "1rem",
             margin: "1rem 1rem 0.75rem 0.75rem",
-            fontSize: "0.75rem"
+            fontSize: "0.5rem"
 
         }
 
         const buttonStyle2 = {
             borderRadius: "1rem",
             margin: "1rem 1rem 0.75rem 0.75rem",
-            fontSize: "0.75rem"
+            fontSize: "0.5rem"
         }
 
         let cards: JSX.Element[] = [];
@@ -129,6 +129,36 @@ export class EditMoodboardPage extends Component<EditMoodboardPageProps, EditMoo
                 edited: false
             }))
         }
+        let handleDeleteMoodboard = () => {
+            // TODO: Add an alert pop up confirming the delete in this page, and in gallery, add a modal pop up and a delete feature.
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = JSON.stringify({
+                "username": this.props.authToken.username,
+                "name": this.props.moodboard.name
+            });
+
+            var requestOptions: RequestInit = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+            fetch("https://photo-inspo-backend.herokuapp.com/delete", requestOptions)
+                .then(response => {
+                    if (!response.ok) {
+                        console.log(response);
+                        throw new Error(`Error code ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    this.props.clearEditedMoodboard();
+                })
+                .catch(error => alert(error));
+        }
         let handleSaveEdits = () => {
             let oldName = this.props.moodboard.name;
             let myHeaders = new Headers();
@@ -163,6 +193,10 @@ export class EditMoodboardPage extends Component<EditMoodboardPageProps, EditMoo
 
         return (<Content>
                 <Button onClick={this.props.clearEditedMoodboard}>Back to Gallery</Button>
+                <Button onClick={handleDeleteMoodboard}>
+                    <Text>Delete Moodboard</Text>
+                    <DeleteOutlined/>
+                </Button>
                 <Title level={3}>Current Moodboard</Title>
                 <Text editable={editConfig}>{this.state.moodboard.name}</Text>
                 {this.generateBoard()}
