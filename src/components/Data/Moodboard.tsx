@@ -46,6 +46,9 @@ class Moodboard {
 
     removeImageLink(id: string) {
         this.images.delete(id);
+        if (this.defaultImageId === id) {
+            this.images.size >= 1 ? this.setDefaultImageId(Array.from(this.images.values())[0].id) : this.setDefaultImageId("");
+        }
     }
 
     setName(name: string) {

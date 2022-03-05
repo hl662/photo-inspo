@@ -1,10 +1,11 @@
 import {Component} from "react";
 import Moodboard from "../Data/Moodboard";
 import PexelsClient from "../Data/PexelsClient";
-import {BackTop, Button, Card, Col, Empty, Layout, Row, Tooltip} from 'antd';
-import {LeftCircleFilled, UpOutlined} from "@ant-design/icons";
+import {BackTop, Button, Card, Col, Empty, Image, Layout, notification, Row, Space, Spin, Tooltip} from 'antd';
+import {LeftCircleFilled, PushpinOutlined, UpOutlined} from "@ant-design/icons";
 import {red} from "@ant-design/colors";
 import {Photo} from "../Data/Photo";
+import Meta from "antd/es/card/Meta";
 
 const {Content} = Layout;
 
@@ -17,29 +18,39 @@ interface SearchResultPageProps {
 }
 
 interface SearchResultPageState {
-    resultImages: Photo[]
+    resultImages: Photo[],
+    loading: boolean
 }
 
 // Maybe make own image interfaces
 class SearchResultPage extends Component<SearchResultPageProps, SearchResultPageState> {
-    getSearchResults(searchQuery: string): void {
-        this.props.pexelsClient.searchOnQuery(searchQuery).then((result: Photo[]) => {
-            this.setState(() => {
-                return {
-                    resultImages: result
-                }
-            })
-        }).catch((err) => {
-            alert(err);
-            this.props.clearSearchQuery();
-        });
-    }
+
 
     constructor(props: SearchResultPageProps) {
         super(props);
         this.state = {
-            resultImages: []
+            resultImages: [],
+            loading: false
         }
+    }
+
+    getSearchResults(searchQuery: string): void {
+        this.setState((prevState) => ({
+            ...prevState,
+            loading: true
+        }));
+        this.props.pexelsClient.searchOnQuery(searchQuery).then((result: Photo[]) => {
+            this.setState(() => ({
+                resultImages: result,
+                loading: false
+            }))
+        }).catch((err) => {
+            notification.error({
+                message: err,
+                duration: 2,
+            })
+            this.props.clearSearchQuery();
+        });
     }
 
     componentDidMount() {
@@ -63,16 +74,30 @@ class SearchResultPage extends Component<SearchResultPageProps, SearchResultPage
             let handleCardAdd = () => {
                 this.props.currentMoodboard.addImage(image.id.toString(), image);
                 this.props.updateBoardCount();
+                notification.success({
+                    message: 'Pinned',
+                    description: "Image pinned to current board!",
+                    duration: 1.25,
+                })
             }
+            let photographerCredit = `By ${image.photographer}`
             return (
                 <Col span={6}>
                     <Card
-                        cover={<img alt={image.altText} src={image.src}/>}
-                        actions={[
-                            <Button key={"add"} style={buttonStyle} type={"primary"}
-                                    onClick={handleCardAdd}>Pin</Button>
-                        ]}
+                        style={{borderRadius: "2rem"}}
+                        hoverable
+                        cover={<Image style={{borderRadius: "1rem 1rem 0rem 0rem"}} alt={image.altText}
+                                      src={image.src}/>}
                     >
+                        <Meta
+                            avatar={<Button key={"add"} style={buttonStyle} type={"primary"}
+                                            disabled={this.props.currentMoodboard.images.has(image.id)}
+                                            onClick={handleCardAdd} icon={<PushpinOutlined/>}/>}
+                            title={image.altText}
+                            description={photographerCredit}
+                        >
+
+                        </Meta>
                     </Card>
                 </Col>
             );
@@ -81,13 +106,16 @@ class SearchResultPage extends Component<SearchResultPageProps, SearchResultPage
     }
 
     render() {
-        // If images is empty, return a div that says "No images found".
         if (this.state.resultImages.length === 0) {
             return (
-                <Empty description={
+                <Empty style={{marginTop: "15%"}} description={
                     <span>No Images Found.</span>
                 }>
-                    <Button onClick={this.props.clearSearchQuery} type="primary">Go back to Search</Button>
+                    <Space direction={"vertical"}>
+                        <Button onClick={this.props.clearSearchQuery} type="primary">Go back to Search</Button>
+                        <Spin style={{marginTop: "3%"}} size={"large"} spinning={this.state.loading}/>
+                    </Space>
+
                 </Empty>
             )
         }
@@ -102,20 +130,18 @@ class SearchResultPage extends Component<SearchResultPageProps, SearchResultPage
         }
 
         const buttonStyle = {
-            backgroundColor: red[4],
-            borderColor: red[4],
             borderRadius: "1rem",
             margin: "1rem 1rem 0.75rem 0.75rem",
-            fontSize: "0.75rem"
+            color: red[4]
         }
         // @ts-ignore
         return (
-            <Content style={{padding: "0.2rem"}}>
-                <Tooltip title="Back to Search">
-                    <Button style={buttonStyle} type="primary" shape="default"
-                            size={"middle"}
-                            icon={<LeftCircleFilled/>}
-                            onClick={this.props.clearSearchQuery}>Back to Search</Button>
+            <Content style={{padding: "1rem"}}>
+                <Tooltip title="Back to Search" placement={"right"}>
+                    <Button style={buttonStyle} type="text" shape="default"
+                            size={"large"}
+                            icon={<LeftCircleFilled style={{fontSize: "150%"}}/>}
+                            onClick={this.props.clearSearchQuery}/>
                 </Tooltip>
                 <Row style={{marginTop: "1rem"}} gutter={[16, {xs: 8, sm: 16, md: 24, lg: 32}]}>
                     {this.generateCards()}

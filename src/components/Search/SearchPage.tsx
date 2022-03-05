@@ -18,7 +18,7 @@ interface SearchPageProps {
 }
 
 interface SearchPageState {
-    searchQuery: string
+    searchQuery: string,
 }
 
 
@@ -32,7 +32,7 @@ class SearchPage extends Component<SearchPageProps, SearchPageState> {
 
     constructor(props: SearchPageProps) {
         super(props);
-        this.pexelsClient = new PexelsClient(process.env.PEXEL_ID);
+        this.pexelsClient = new PexelsClient(process.env.REACT_APP_PEXEL_ID);
         this.state = this.defaultState;
     }
 
@@ -60,6 +60,7 @@ class SearchPage extends Component<SearchPageProps, SearchPageState> {
     render() {
         const searchStyle = {
             margin: "1rem 1rem 0.75rem 0.75rem",
+            height: "30%"
         }
         const buttonStyle = {
             backgroundColor: red[4],

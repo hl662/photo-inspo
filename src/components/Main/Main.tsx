@@ -2,8 +2,8 @@ import {Badge, Layout, Menu, Typography} from "antd";
 import React, {Component} from "react";
 import {BrowserRouter, Link, Route, Routes} from "react-router-dom";
 import SearchPage from "../Search/SearchPage";
-import MoodboardPage from "../Authentication/Moodboard/MoodboardPage";
-import MoodboardGallery from "../Authentication/Moodboard/MoodboardGallery";
+import MoodboardPage from "../Moodboard/MoodboardPage";
+import MoodboardGallery from "../Moodboard/MoodboardGallery";
 import Authentication, {AuthTokenProps} from "../Authentication/Authentication";
 import Moodboard from "../Data/Moodboard";
 
@@ -53,8 +53,6 @@ class Main extends Component<any, MainState> {
 
     // Use SubMenu to make the logout button be margin-right/ right aligned?
     render() {
-        // https://www.pluralsight.com/guides/how-to-set-react-router-default-route-redirect-to-home
-        // TODO: Use above to fix the redirection of signout to login.
         if (this.state.authToken.token === "") {
             return <Authentication setAuthProps={this.setAuthProps}/>;
         } else {
@@ -63,10 +61,11 @@ class Main extends Component<any, MainState> {
                     <Layout style={{minHeight: "100vh"}}>
                         <Layout>
                             <Header style={{background: "#fff", padding: 0}}>
-                                <Menu theme="light" defaultSelectedKeys={["1"]} mode="horizontal">
+                                <Menu style={{fontWeight: "bold"}} theme="light" defaultSelectedKeys={["1"]}
+                                      mode="horizontal">
                                     <Menu.Item key="1">
                                         <Link to="/">
-                                            <span>Search</span>
+                                            <Text>Search</Text>
                                         </Link>
                                     </Menu.Item>
                                     <Menu.Item key="2">
@@ -80,11 +79,11 @@ class Main extends Component<any, MainState> {
                                     </Menu.Item>
                                     <Menu.Item key="3">
                                         <Link to="/moodboards">
-                                            <span>My Moodboards</span>
+                                            <Text>My Moodboards</Text>
                                         </Link>
                                     </Menu.Item>
                                     <Menu.Item onClick={this.signOut} key="4">
-                                        <span>Sign Out</span>
+                                        <Text>Sign Out</Text>
                                     </Menu.Item>
                                 </Menu>
                             </Header>
